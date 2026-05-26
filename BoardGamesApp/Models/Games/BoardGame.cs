@@ -7,6 +7,7 @@ namespace BoardGamesApp.Models.Games
 {
     public abstract class BoardGame
     {
+        public event Action<Player, IGameAction>? TurnMade;
         public string Name { get; }
 
         public List<Player> Players { get; }
@@ -33,22 +34,44 @@ namespace BoardGamesApp.Models.Games
             Rules = rules;
         }
 
-        public abstract bool CanStart();
-
-        public virtual void MakeTurn(
-            Player player,
-            IGameAction action)
+        public virtual bool CanStart()
         {
-            bool isAllowed =
-                Rules.AllowedActions.Contains(action.GetType());
+            // Перевірка кількості гравців
+            if (Players.Count < Rules.MinPlayers || Players.Count > Rules.MaxPlayers)
+                return false;
 
+            // Перевірка наявності всіх необхідних компонентів
+            foreach (var requiredType in Rules.RequiredComponents)
+            {
+                if (!Components.Any(c => c.GetType() == requiredType))
+                    return false;
+            }
+
+            // Перевірка, що немає "зайвих" компонентів
+            if (Components.Count != Rules.RequiredComponents.Count)
+                return false;
+
+            return true;
+        }
+
+        public virtual void MakeTurn(Player player, IGameAction action)
+        {
+            bool isAllowed = Rules.AllowedActions.Contains(action.GetType());
             if (!isAllowed)
             {
-                throw new InvalidOperationException(
-                    "This action is not allowed in this game.");
+                throw new InvalidOperationException("This action is not allowed in this game.");
             }
 
             action.Execute();
+            TurnMade?.Invoke(player, action);
+
+            // СИМУЛЯЦІЯ: З ймовірністю 15% гравець перемагає на цьому ході
+            Random rnd = new Random();
+            if (rnd.Next(1, 100) <= 15)
+            {
+                FinishGame(player);
+                player.Win(); // Викликаємо подію перемоги у гравця
+            }
         }
 
         protected void FinishGame(Player winner)

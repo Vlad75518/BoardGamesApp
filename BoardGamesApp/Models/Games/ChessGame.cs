@@ -37,28 +37,11 @@ namespace BoardGamesApp.Models.Games
                 AllowedActions = new List<Type>
                 {
                     typeof(MoveAction),
-                    typeof(CaptureAction)
+                    typeof(CaptureAction),
+                    typeof(CastleAction),
+                    typeof(PromoteAction)
                 }
             };
-        }
-
-        public override bool CanStart()
-        {
-            return true;
-        }
-
-        public override void MakeTurn(
-            Player player,
-            IGameAction action)
-        {
-            base.MakeTurn(player, action);
-
-            _turnCount++;
-
-            if (_turnCount >= 3)
-            {
-                FinishGame(player);
-            }
         }
     }
 }

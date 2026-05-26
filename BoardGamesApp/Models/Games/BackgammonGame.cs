@@ -35,14 +35,11 @@ namespace BoardGamesApp.Models.Games
 
                 AllowedActions = new List<Type>
                 {
-                    typeof(MoveAction)
+                    typeof(RollDiceAction),
+                    typeof(MoveAction),
+                    typeof(BearOffAction)
                 }
             };
-        }
-
-        public override bool CanStart()
-        {
-            return true;
         }
     }
 }

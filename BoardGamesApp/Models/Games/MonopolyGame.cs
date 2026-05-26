@@ -35,16 +35,14 @@ namespace BoardGamesApp.Models.Games
 
                 AllowedActions = new List<Type>
                 {
+                    typeof(RollDiceAction), // Монополія починається з кубиків
                     typeof(MoveAction),
                     typeof(BuyAction),
-                    typeof(SellAction)
+                    typeof(SellAction),
+                    typeof(PayRentAction),
+                    typeof(DrawCardAction)
                 }
             };
-        }
-
-        public override bool CanStart()
-        {
-            return true;
         }
     }
 }
