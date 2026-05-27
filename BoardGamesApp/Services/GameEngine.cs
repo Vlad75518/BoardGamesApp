@@ -1,35 +1,30 @@
 ﻿using BoardGamesApp.Models.Actions;
 using BoardGamesApp.Models.Games;
 using System;
-using System.Threading; // Додано для Thread.Sleep
+using System.Threading;
 
 namespace BoardGamesApp.Services
 {
     public class GameEngine
     {
-        private readonly TurnManager _turnManager;
-        private readonly GameValidator _validator;
-
         public GameEngine()
         {
-            _turnManager = new TurnManager();
-            _validator = new GameValidator();
         }
 
         public void StartGame(BoardGame game)
         {
             Console.Clear(); // Очищаємо екран від меню для чистого логу
 
-            // Перевірка правил
-            if (!_validator.Validate(game) || !game.CanStart())
+            // Перевірка можливості старту гри
+            if (!game.CanStart())
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"[ERROR] Game '{game.Name}' cannot start. Check components and players!");
+                Console.WriteLine($"[ERROR] Game '{game.Name}' cannot start. Check requirements (players or components)!");
                 Console.ResetColor();
                 return;
             }
 
-            // Підписка на подію ходу (вимога викладача: вивід за межами логіки гри)
+            // Підписка на подію ходу
             game.TurnMade += (player, action) =>
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -38,33 +33,33 @@ namespace BoardGamesApp.Services
                 Console.WriteLine($"used action: {action.Description}");
             };
 
-            // Гарний старт
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"=== {game.Name.ToUpper()} STARTED ===");
             Console.ResetColor();
             Console.WriteLine("Simulating gameplay...\n");
 
-            Thread.Sleep(1000); // Пауза перед початком симуляції
+            Thread.Sleep(1000);
 
             Random random = new Random();
 
+            int currentPlayerIndex = 0;
+
             while (!game.IsFinished)
             {
-                var currentPlayer = _turnManager.GetCurrentPlayer(game.Players);
+                // Беремо поточного гравця за його індексом у списку
+                var currentPlayer = game.Players[currentPlayerIndex];
 
-                // Динамічно беремо випадкову дію з дозволених для цієї гри
+                // Випадковий вибір дозволеної дії для конкретної гри
                 var allowedActions = game.Rules.AllowedActions;
                 Type randomActionType = allowedActions[random.Next(allowedActions.Count)];
                 IGameAction action = (IGameAction)Activator.CreateInstance(randomActionType)!;
 
-                // Робимо хід
+                // Виконуємо хід
                 game.MakeTurn(currentPlayer, action);
 
-                // Затримка на 800 мілісекунд, щоб було видно процес гри
                 Thread.Sleep(800);
 
-                // Перехід ходу до наступного
-                _turnManager.NextTurn(game.Players);
+                currentPlayerIndex = (currentPlayerIndex + 1) % game.Players.Count;
             }
 
             Console.ForegroundColor = ConsoleColor.Green;
