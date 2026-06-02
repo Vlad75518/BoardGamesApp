@@ -70,7 +70,6 @@ namespace BoardGamesApp.Models.Games
             if (rnd.Next(1, 100) <= 15)
             {
                 FinishGame(player);
-                player.Win(); // Викликаємо подію перемоги у гравця
             }
         }
 
@@ -80,7 +79,7 @@ namespace BoardGamesApp.Models.Games
 
             IsFinished = true;
 
-            winner.Win();
+            winner.Win(); // Викликаємо подію перемоги у гравця
         }
     }
 }
