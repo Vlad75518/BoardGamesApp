@@ -67,7 +67,13 @@ while (true)
         // Observer №2
         foreach (var player in players)
         {
-            player.PlayerWon += view.ShowWinner;
+            player.PlayerWon += winner =>
+            {
+                view.ShowWinner(winner);
+
+                GameLogger.Instance.Log(
+                    $"WINNER: {winner.Name}");
+            };
         }
 
         Console.Clear();
