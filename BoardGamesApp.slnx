@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="BoardGamesApp/BoardGamesApp.csproj" />
+  <Project Path="BoardGames.BLL/BoardGames.BLL.csproj" Id="b5a18e46-3452-4995-9343-1be5d76432b3" />
+  <Project Path="BoardGames.DAL/BoardGames.DAL.csproj" Id="d60cfbe2-a9aa-4531-b83e-311643192208" />
+  <Project Path="BoardGames.UI/BoardGames.UI.csproj" Id="23d7d77d-114f-4137-9d40-132c7d6cbf50" />
 </Solution>
